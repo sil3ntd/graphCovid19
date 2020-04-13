@@ -12,6 +12,17 @@ main(int argc, char *argv[])
 	char *unraw_data[100];
 	int len = 0;
 	int case_per_day[100];
+	char *header[100];
+	char *date_started, *date_ended;
+
+	/* Get the header data */
+	getraw(raw);
+	len = unraw(raw, header);
+	date_started = header[4];
+	date_ended = header[len-2];
+	
+	printf("\n\n%4c Data is from %s - %s\n\n", 0x20, date_started, date_ended);
+
 
 	while((len = getraw(raw)) > 0){
 		if(strstr(raw, argv[1])){
@@ -29,11 +40,12 @@ main(int argc, char *argv[])
 			}
 		}
 	}
+	printf("%4c Graph of cases per day.\n%4c Country: %s\n", 0x20,
+			0x20, argv[1]);
 	draw_graph(case_per_day, i - 3);
 
 
 	printf("\n");
-
 	return 0;
 }
 
@@ -67,11 +79,10 @@ int unraw(char *raw, char *unraw_data[])
 		t = strtok(NULL, ",");
 		unraw_data[i++] = t;
 	}
-	/*		
+	/*			
 	for(i = 0; unraw_data[i] != '\0'; ++i)
 		printf("data[%d] - %s\n", i, unraw_data[i]);
-	*/
-	
+	*/	
 
 	return i;
 }
@@ -99,7 +110,6 @@ void draw_graph(int data[], int size)
 	printf("%4c|", 0x20);	
 	for(i = 0; i < size; i++)
 		printf("__");
-	
 	printf("____\n");
 	
 }
