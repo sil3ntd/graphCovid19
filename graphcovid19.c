@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
-/*int getraw(char *);*/
-
+int getraw(char *);
+int unraw(char *, char *[]);
 void draw_graph(int data[], int size);
 
 main(int argc, char *argv[])
@@ -32,9 +32,9 @@ main(int argc, char *argv[])
 			i = 4;
 			while(unraw_data[i] != NULL){
 				if(i == 4)
-					case_per_day[i-3] += atoi(unraw_data[i]);
+					case_per_day[i-4] += atoi(unraw_data[i]);
 				else
-					case_per_day[i-3] += (atoi(unraw_data[i]) -
+					case_per_day[i-4] += (atoi(unraw_data[i]) -
 						atoi(unraw_data[i-1]));	
 				i++;
 			}
@@ -42,7 +42,7 @@ main(int argc, char *argv[])
 	}
 	printf("%4c Graph of cases per day.\n%4c Country: %s\n", 0x20,
 			0x20, argv[1]);
-	draw_graph(case_per_day, i - 3);
+	draw_graph(case_per_day, i - 4);
 
 
 	printf("\n");
