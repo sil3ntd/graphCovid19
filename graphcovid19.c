@@ -7,11 +7,11 @@ void draw_graph(int data[], int size);
 
 main(int argc, char *argv[])
 {
-	int c, i, j;
+	int i;
 	char raw[1000];
 	char *unraw_data[100];
 	int len = 0;
-	int case_per_day[100];
+	int case_per_day[100] = {0};
 	char *header[100];
 	char *date_started, *date_ended;
 
@@ -27,7 +27,6 @@ main(int argc, char *argv[])
 	while((len = getraw(raw)) > 0){
 		if(strstr(raw, argv[1])){
 			unraw(raw, unraw_data);
-
 			/* save the number of cases per day */
 			i = 4;
 			while(unraw_data[i] != NULL){
@@ -79,11 +78,6 @@ int unraw(char *raw, char *unraw_data[])
 		t = strtok(NULL, ",");
 		unraw_data[i++] = t;
 	}
-	/*			
-	for(i = 0; unraw_data[i] != '\0'; ++i)
-		printf("data[%d] - %s\n", i, unraw_data[i]);
-	*/	
-
 	return i;
 }
 
@@ -106,7 +100,7 @@ void draw_graph(int data[], int size)
 		--base;
 		printf("\n");
 	}
-	/* Put a header on the x axis */
+	/* Put a header line on the x axis */
 	printf("%4c|", 0x20);	
 	for(i = 0; i < size; i++)
 		printf("__");
