@@ -23,7 +23,7 @@ void draw_graph(int data[], int size);
 
 main(int argc, char *argv[])
 {
-	int i;
+	int i, j;
 	char raw[MAXLEN];
 	char *unraw_data[100];
 	int len = 0;
@@ -41,13 +41,13 @@ main(int argc, char *argv[])
 		 * line argument */
 		if(strstr(raw, argv[1])){
 			unraw(raw, unraw_data);
-			/* save the number of cases per day, starting from the 4th element
+			/* save the number of cases per day, starting from the jth element
 			 * of unraw_data array */
-			i = 4;
-			case_per_day[i-4] += atoi(unraw_data[i]);
+			i = j = strcmp(argv[1], "Korea, South") ? 4 : 5;
+			case_per_day[i-j] += atoi(unraw_data[i]);
 			++i;
 			while(unraw_data[i] != NULL){
-				case_per_day[i-4] += (atoi(unraw_data[i]) - atoi(unraw_data[i-1]));	
+				case_per_day[i-j] += (atoi(unraw_data[i]) - atoi(unraw_data[i-1]));	
 				i++;
 			}
 		}
@@ -55,7 +55,7 @@ main(int argc, char *argv[])
 	printf("%4c Graph of cases per day.\n%4c Country: %s\n", 0x20,
 			0x20, argv[1]);
 
-	draw_graph(case_per_day, i - 4);
+	draw_graph(case_per_day, i - j);
 
 	printf("\n");
 	return 0;
