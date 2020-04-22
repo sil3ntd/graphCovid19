@@ -1,5 +1,21 @@
+/* Requirement: 
+
+   	Create a vertical histogram of the daily covid19 cases for each country. Use
+	the dataset from the Johns Hopkins University.
+
+
+	One approach to solve the problem is to divide it into three separate
+	functions. They are:
+
+	 		We get the raw data for each country
+			Format the data
+			create the graph
+*/
+
 #include <stdio.h>
 #include <string.h>
+#define MAXLEN 1000
+
 
 int getraw(char *);
 int unraw(char *, char *[]);
@@ -8,41 +24,38 @@ void draw_graph(int data[], int size);
 main(int argc, char *argv[])
 {
 	int i;
-	char raw[1000];
+	char raw[MAXLEN];
 	char *unraw_data[100];
 	int len = 0;
 	int case_per_day[100] = {0};
-	char *header[100];
-	char *date_started, *date_ended;
 
 	/* Get the header data */
 	getraw(raw);
-	len = unraw(raw, header);
-	date_started = header[4];
-	date_ended = header[len-2];
+	len = unraw(raw, unraw_data);
 	
-	printf("\n\n%4c Data is from %s - %s\n\n", 0x20, date_started, date_ended);
+	printf("\n\n%4c Data is from %s - %s", 0x20, unraw_data[4], unraw_data[len - 2]);
 
 
 	while((len = getraw(raw)) > 0){
+		/* Select only the data from a specific country specified in the command
+		 * line argument */
 		if(strstr(raw, argv[1])){
 			unraw(raw, unraw_data);
-			/* save the number of cases per day */
+			/* save the number of cases per day, starting from the 4th element
+			 * of unraw_data array */
 			i = 4;
+			case_per_day[i-4] += atoi(unraw_data[i]);
+			++i;
 			while(unraw_data[i] != NULL){
-				if(i == 4)
-					case_per_day[i-4] += atoi(unraw_data[i]);
-				else
-					case_per_day[i-4] += (atoi(unraw_data[i]) -
-						atoi(unraw_data[i-1]));	
+				case_per_day[i-4] += (atoi(unraw_data[i]) - atoi(unraw_data[i-1]));	
 				i++;
 			}
 		}
 	}
 	printf("%4c Graph of cases per day.\n%4c Country: %s\n", 0x20,
 			0x20, argv[1]);
-	draw_graph(case_per_day, i - 4);
 
+	draw_graph(case_per_day, i - 4);
 
 	printf("\n");
 	return 0;
@@ -58,6 +71,9 @@ int getraw(char *s)
 	while((c = getchar()) != EOF && c != '\n')
 		s[i++] = c;
 
+	if(c == '\n')
+		s[i++] = c;
+
 	s[i] = '\0';
 	return i;
 }
@@ -69,7 +85,7 @@ int unraw(char *raw, char *unraw_data[])
 	int i = 0;
 	char *t;
 	
-	if(raw[0] == ',')
+	if(raw[i] == ',')
 		unraw_data[i++] = ",";
 
 	t = strtok(raw, ",");
@@ -78,6 +94,7 @@ int unraw(char *raw, char *unraw_data[])
 		t = strtok(NULL, ",");
 		unraw_data[i++] = t;
 	}
+	unraw_data[i] = t;
 	return i;
 }
 
