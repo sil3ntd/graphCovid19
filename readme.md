@@ -6,21 +6,19 @@ web-based graph which can be seen from the Johns Hopkins website.
 
 I created this because I have a slow internet connection and loading
 from the Johns Hopkins website takes some time. With this you can
-just download the data which is in text format (csv file) and run the
-data against this program.
+just download the data which is in text format (csv file) and run the program.
 
 To run the program:
 
-	$ graphCovid19 Philippines < time_series_covid19_confirmed_global.csv
-
+	$ graphCovid19 Philippines
 
 To compile the program:
 
 	$ c89 graphcovid19.c -o graphCovid19
 
 To download the data:
-	
-	$ wget https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv
+
+	$ curl https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv > data.csv
 
 It is best to download first the data before running the program to
 have the latest information. 

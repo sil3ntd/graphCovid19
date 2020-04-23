@@ -21,6 +21,8 @@ int getraw(char *);
 int unraw(char *, char *[]);
 void draw_graph(int data[], int size);
 
+FILE *fp;
+
 main(int argc, char *argv[])
 {
 	int i, j;
@@ -29,6 +31,11 @@ main(int argc, char *argv[])
 	int len = 0;
 	int case_per_day[100] = {0};
 
+	fp = fopen("data.csv", "r");
+	if(!fp){
+		printf("data.csv does not exist\n");
+		return 0;
+	}
 	/* Get the header data */
 	getraw(raw);
 	len = unraw(raw, unraw_data);
@@ -68,7 +75,7 @@ int getraw(char *s)
 	int i, c;
 
 	i = 0;
-	while((c = getchar()) != EOF && c != '\n')
+	while((c = fgetc(fp)) != EOF && c != '\n')
 		s[i++] = c;
 
 	if(c == '\n')
@@ -118,7 +125,7 @@ void draw_graph(int data[], int size)
 		printf("\n");
 	}
 	/* Put a header line on the x axis */
-	printf("%c|", 0x20);	
+	printf("%4c|", 0x20);	
 	for(i = 0; i < size; i++)
 		printf("_");
 	printf("____\n");
