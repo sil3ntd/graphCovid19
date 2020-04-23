@@ -110,17 +110,17 @@ void draw_graph(int data[], int size)
 		printf("%4c|", 0x20);
 		for(i = 0; i < size; i++){
 			if(data[i]/15 < base)
-				printf("%2c", 0x20);
+				printf("%c", 0x20);
 			else
-				printf("%2c", '|');
+				printf("%c", '|');
 		}
 		--base;
 		printf("\n");
 	}
 	/* Put a header line on the x axis */
-	printf("%4c|", 0x20);	
+	printf("%c|", 0x20);	
 	for(i = 0; i < size; i++)
-		printf("__");
+		printf("_");
 	printf("____\n");
 	
 }
