@@ -27,9 +27,9 @@ main(int argc, char *argv[])
 {
 	int i, j;
 	char raw[MAXLEN];
-	char *unraw_data[100];
+	char *unraw_data[200];
 	int len = 0;
-	int case_per_day[100] = {0};
+	int case_per_day[200] = {0};
 
 	fp = fopen("data.csv", "r");
 	if(!fp){
