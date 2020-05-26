@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#define MAXLEN 1000
+#define MAXLEN 1100
 
 
 int getraw(char *);
@@ -29,7 +29,7 @@ main(int argc, char *argv[])
 	char raw[MAXLEN];
 	char *unraw_data[200];
 	int len = 0;
-	int case_per_day[200] = {0};
+	int case_per_day[250] = {0};
 
 	fp = fopen("data.csv", "r");
 	if(!fp){
