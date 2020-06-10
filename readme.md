@@ -10,7 +10,7 @@ just download the data which is in text format (csv file) and run the program.
 
 To run the program:
 
-	$ graphCovid19 Philippines
+	$ ./graphCovid19 Philippines
 
 To compile the program:
 
