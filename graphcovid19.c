@@ -14,7 +14,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#define MAXLEN 1100
+#include <stdlib.h>
+#define MAXLEN 1200
 
 
 int getraw(char *);
@@ -23,7 +24,7 @@ void draw_graph(int data[], int size);
 
 FILE *fp;
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int i, j;
 	char raw[MAXLEN];
