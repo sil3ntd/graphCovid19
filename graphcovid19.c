@@ -15,63 +15,187 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define MAXLEN 1200
+#include <stddef.h>
+
+#define MAXLEN 1200		/* maximum length of each record */
+#define MAXFIELD 200	/* maximum number of fields */
+#define MAXRECORD 300	/* maximum number of records */
+#define MAXLENGTH 50	/* maximum length of a country name */
 
 
-int getraw(char *);
-int unraw(char *, char *[]);
-void draw_graph(int data[], int size);
+int get_record(char *);
+int get_fields(char *, char *[]);
+void print_usage(char *);
+void draw_graph(int [], int );
+void print_list(char [][MAXLENGTH], int size);
 
 FILE *fp;
 
 int main(int argc, char *argv[])
 {
-	int i, j;
-	char raw[MAXLEN];
-	char *unraw_data[200];
-	int len = 0;
-	int case_per_day[250] = {0};
+	char record[MAXLEN], *fields[MAXFIELD];
+	char country[MAXRECORD][MAXLENGTH];		/* array of country names */
+	char c;
+	int h_opt = 0, l_opt = 0, c_opt = 0;
+	char *prog_name = argv[0];
+	char buff[50];
+	int i,len, count;
+	int cases[1000] = {0};
+	int found = 0;
+	char start_date[20], end_date[20];
 
 	fp = fopen("data.csv", "r");
 	if(!fp){
 		printf("data.csv does not exist\n");
 		return 0;
 	}
-	/* Get the header data */
-	getraw(raw);
-	len = unraw(raw, unraw_data);
-	
-	printf("\n\n%4c Data is from %s - %s", 0x20, unraw_data[4], unraw_data[len - 2]);
 
-
-	while((len = getraw(raw)) > 0){
-		/* Select only the data from a specific country specified in the command
-		 * line argument */
-		if(strstr(raw, argv[1])){
-			unraw(raw, unraw_data);
-			/* save the number of cases per day, starting from the jth element
-			 * of unraw_data array */
-			i = j = strcmp(argv[1], "Korea, South") ? 4 : 5;
-			case_per_day[i-j] += atoi(unraw_data[i]);
-			++i;
-			while(unraw_data[i] != NULL){
-				case_per_day[i-j] += (atoi(unraw_data[i]) - atoi(unraw_data[i-1]));	
-				i++;
-			}
+	while(--argc > 0 && *(++argv)[0] == '-'){
+		c = *++argv[0];
+		switch(c){
+			case 'h':
+				h_opt = 1;
+				break;
+			case 'l':
+				l_opt = 1;
+				break;
+			case 'c':
+				c_opt = 1;
+				break;
+			default:
+				printf("%s: Invalid option -- '%c'\n", prog_name, c);
+				printf("Try '%s -h' for more information\n", prog_name);
+				return -1;
 		}
 	}
-	printf("%4c Graph of cases per day.\n%4c Country: %s\n", 0x20,
-			0x20, argv[1]);
+	if(argc == 0){
+		if(l_opt){
+			printf("\nList of countries:\n\n");
+			/* 
+			   Structure for printing the list of countries:
+		
+			   get a record
+			   separate into fields
+			   save all the country fields
+			   sort them
+			   print a unique list
+			*/
+			count = 0;
+			while(get_record(record) > 0){
+				get_fields(record, fields);
+				strcpy(country[count++], fields[1]);
+			}
+			print_list(country, count-1);
+		}else if(h_opt)
+			print_usage(prog_name);
+		else if(c_opt){
+			printf("%s: Too few arguments\n", prog_name);
+			printf("Try '%s -h' for more information\n", prog_name);
+			return -1;
+		}else
+			print_usage(prog_name);
+	}else{
+		if(c_opt){
+			printf("\n");	
+			/* Get the header */
+			get_record(record);
+			len = get_fields(record, fields);
+			strcpy(start_date, fields[4]);
+			strcpy(end_date, fields[len-1]);
 
-	draw_graph(case_per_day, i - j);
+			/* get the country */
+			strcpy(buff, argv[0]);
 
-	printf("\n");
+			/* 
+			   Structure for printing the graph for a country:
+
+			   get a record
+			   separate into fields
+			   save all the data from specified country
+			   print the graph using the data
+			*/
+			while(get_record(record) > 0){
+				len = get_fields(record, fields);
+				if(strcmp(fields[1], buff) == 0){
+					found = 1;
+					/* start collecting from the 4th element */
+					for(i = 0; i < len - 4; i++){
+						if(i == 0)
+							cases[i] += atoi(fields[i+4]);
+						else
+							cases[i] += (atoi(fields[i+4]) - atoi(fields[i+4-1]));
+					}
+				}
+			}
+			if(!found){
+				printf("%s: country '%s' not found\n", prog_name, argv[0]);
+				printf("Try '%s -l' to see the list of countries\n", prog_name);
+				return -1;
+			}
+			draw_graph(cases, len - 4);
+
+			printf("\n\tGraph of covid-19 daily cases\n");
+			printf("\tDate: %s to %s\n", start_date, end_date);
+			printf("\tCountry: %s\n\n", buff);
+
+		}else{
+			printf("%s: Too many arguments\n", prog_name);
+			printf("Try '%s -h' for more information\n", prog_name);
+			return -1;
+		}
+	}
 	return 0;
+
 }
 
-/* get raw/csv data and write into s, return total number of
- * characters read */
-int getraw(char *s)
+void print_usage(char *s)
+{
+	printf("Usage: %s [OPTIONS]\n", s);
+	printf("Display a histogram of covid-19 cases for each country\n");
+	printf("\nOptions:\n");
+	printf("%3s %-12s Print the graph for a specific country.\n", "-c",
+			"COUNTRY");
+	printf("%3s %12c Prints a list of countries.\n", "-l", 0x20);
+	printf("%3s %12c Prints this usage information.\n", "-h", 0x20);
+
+	printf("\n");
+}
+
+
+
+int cmp(const void *a, const void *b)
+{
+	return strcmp((char*)a, (char*)b);
+}
+/* print_list: print a unique list of country name from an array of country
+ * names */
+
+void print_list(char s[][MAXLENGTH], int size)
+{
+	int i, count;
+	char buff[MAXLENGTH];
+
+	qsort((void*)s, size, sizeof(s[0]), cmp);
+
+	for(i = 0, count = 0; i < size; i++){
+		if(strcmp(buff, s[i]) == 0)
+			;
+		else{
+			printf("%-33s", s[i]);
+			strcpy(buff, s[i]);
+			count++;
+		}
+		if(count % 5 == 0){
+			printf("\n");
+			count = 0;
+		}
+	}
+	printf("\n");
+}
+
+/* get_record: get a record from the csv data, save into s and return the total
+ * number of characters read */
+int get_record(char *s)
 {
 	int i, c;
 
@@ -86,24 +210,51 @@ int getraw(char *s)
 	return i;
 }
 
-/* unraw: get each item from the csv formatted raw data and save it
- * to the unraw_data. */
-int unraw(char *raw, char *unraw_data[])
-{
-	int i = 0;
-	char *t;
-	
-	if(raw[i] == ',')
-		unraw_data[i++] = ",";
+/* get_fields: separate s into fields and save the pointer pointing at the start
+ * of each field into t */
 
-	t = strtok(raw, ",");
-	unraw_data[i++] = t;
-	while(t != NULL){
-		t = strtok(NULL, ",");
-		unraw_data[i++] = t;
+int get_fields(char *s, char *t[])
+{
+	char *p_cur; 		/* current pointer in s */
+	char *p_start;		/* pointer at the start of a field */
+	char delim = 0x2C; 	/* initialize delimeter to the comma (,) character */
+	int j;
+
+	p_start = s;		
+	/* Check if the current character is a quote ("), if it is start reading at
+	 * the next character, and set delimeter as the quote (") character */
+	if(*p_start == 0x22){	 
+		delim = 0x22;		
+		++p_start;
 	}
-	unraw_data[i] = t;
-	return i;
+
+	for(p_cur = p_start, j = 0; *p_cur != '\0'; ++p_cur){
+		if(*p_cur == delim){
+			t[j++] = p_start;
+			*p_cur = '\0';
+			if(delim == 0x22)
+				++p_cur;
+			p_start = p_cur + 1;
+			/* Check if the current character  is a quote ("), if true start
+			 * reading at the next character, and set the delimeter as the
+			 * quote (") character otherwise set comma (,) as the delimiter */
+			if(*p_start == 0x22){
+				delim = 0x22;
+				++p_cur;
+				p_start = p_cur + 1;
+			}else
+				delim = 0x2C;
+		}
+	}
+	/* At this point the last field is not saved since there in no delimeter at
+	 * the end of that field. So we save the field manually. Currently p_cur
+	 * points to the null character. Make the p_cur point to the character
+	 * before the null character which is a newline character and change the
+	 * newline character to a null character to complete the string */
+	*--p_cur = '\0';
+	t[j++] = p_start;
+	t[j] = NULL;
+	return j;
 }
 
 void draw_graph(int data[], int size)
