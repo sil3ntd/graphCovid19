@@ -8,13 +8,22 @@ I created this because I have a slow internet connection and loading
 from the Johns Hopkins website takes some time. With this you can
 just download the data which is in text format (csv file) and run the program.
 
-To run the program:
-
-	$ ./graphCovid19 Philippines
-
 To compile the program:
 
 	$ c89 graphcovid19.c -o graphCovid19
+
+To view help:
+
+	$ ./graphcovid19 -h
+
+To get a list of countries:
+
+	$ ./graphcovid19 -l
+
+To view the graph for a specific country, e.g. Philippines
+
+	$ ./graphcovid19 -c Philippines
+
 
 To download the data:
 
