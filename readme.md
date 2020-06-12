@@ -8,6 +8,9 @@ I created this because I have a slow internet connection and loading
 from the Johns Hopkins website takes some time. With this you can
 just download the data which is in text format (csv file) and run the program.
 
+## Screenshot
+![Preview](./screenshot1.png)
+
 To compile the program:
 
 	$ c89 graphcovid19.c -o graphCovid19
