@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
 			print_usage(prog_name);
 	}else{
 		if(c_opt){
-			printf("\n");	
 			/* Get the header */
 			get_record(record);
 			len = get_fields(record, fields);
@@ -132,6 +131,7 @@ int main(int argc, char *argv[])
 				printf("Try '%s -l' to see the list of countries\n", prog_name);
 				return -1;
 			}
+			printf("\n");
 			draw_graph(cases, len - 4);
 
 			printf("\n\tGraph of covid-19 daily cases\n");
@@ -184,10 +184,10 @@ void print_list(char s[][MAXLENGTH], int size)
 			printf("%-33s", s[i]);
 			strcpy(buff, s[i]);
 			count++;
-		}
-		if(count % 5 == 0){
-			printf("\n");
-			count = 0;
+			if((count % 5) == 0){
+				printf("\n");
+				count = 0;
+			}
 		}
 	}
 	printf("\n");
