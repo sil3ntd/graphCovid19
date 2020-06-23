@@ -50,6 +50,9 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	/* remove the header */
+	get_record(record);
+
 	while(--argc > 0 && *(++argv)[0] == '-'){
 		c = *++argv[0];
 		switch(c){
@@ -97,7 +100,6 @@ int main(int argc, char *argv[])
 	}else{
 		if(c_opt){
 			/* Get the header */
-			get_record(record);
 			len = get_fields(record, fields);
 			strcpy(start_date, fields[4]);
 			strcpy(end_date, fields[len-1]);
