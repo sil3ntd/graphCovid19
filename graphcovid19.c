@@ -33,25 +33,23 @@ FILE *fp;
 
 int main(int argc, char *argv[])
 {
-	char record[MAXLEN], *fields[MAXFIELD];
+	char record[MAXLEN], *header[MAXFIELD], *fields[MAXFIELD];
 	char country[MAXRECORD][MAXLENGTH];		/* array of country names */
 	char c;
 	int h_opt = 0, l_opt = 0, c_opt = 0;
 	char *prog_name = argv[0];
 	char buff[50];
-	int i,len, count;
+	int i,len, count = 0;
 	int cases[1000] = {0};
 	int found = 0;
 	char start_date[20], end_date[20];
+	int highest_case = 0;
 
 	fp = fopen("data.csv", "r");
 	if(!fp){
 		printf("data.csv does not exist\n");
 		return 0;
 	}
-
-	/* remove the header */
-	get_record(record);
 
 	while(--argc > 0 && *(++argv)[0] == '-'){
 		c = *++argv[0];
@@ -99,10 +97,13 @@ int main(int argc, char *argv[])
 			print_usage(prog_name);
 	}else{
 		if(c_opt){
-			/* Get the header */
-			len = get_fields(record, fields);
-			strcpy(start_date, fields[4]);
-			strcpy(end_date, fields[len-1]);
+			/* Save the header */
+			get_record(record);
+			len = get_fields(record, header);
+	
+			/* Save the start and end dates */
+			strcpy(start_date, header[4]);
+			strcpy(end_date, header[len - 1]);
 
 			/* get the country */
 			strcpy(buff, argv[0]);
@@ -119,12 +120,14 @@ int main(int argc, char *argv[])
 				len = get_fields(record, fields);
 				if(strcmp(fields[1], buff) == 0){
 					found = 1;
-					/* start collecting from the 4th element */
-					for(i = 0; i < len - 4; i++){
-						if(i == 0)
-							cases[i] += atoi(fields[i+4]);
-						else
-							cases[i] += (atoi(fields[i+4]) - atoi(fields[i+4-1]));
+					/* start collecting from the 4th element  and record the
+					 * highest case */
+					cases[0] += atoi(fields[4]);
+					highest_case = atoi(fields[4]);
+					for(i = 1; i < len - 4; i++){
+						cases[i] += (atoi(fields[i+4]) - atoi(fields[i+4-1]));
+						highest_case = cases[i] > highest_case ? cases[i] :
+							highest_case;
 					}
 				}
 			}
@@ -139,6 +142,8 @@ int main(int argc, char *argv[])
 			printf("\n\tGraph of covid-19 daily cases\n");
 			printf("\tDate: %s to %s\n", start_date, end_date);
 			printf("\tCountry: %s\n\n", buff);
+			printf("\tLast recorded case: %d cases\n", cases[i-1]);
+			printf("\tHighest recorded case in a day: %d cases\n\n", highest_case);
 
 		}else{
 			printf("%s: Too many arguments\n", prog_name);
@@ -146,8 +151,8 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 	}
+	fclose(fp);
 	return 0;
-
 }
 
 void print_usage(char *s)
