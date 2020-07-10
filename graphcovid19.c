@@ -33,7 +33,7 @@ FILE *fp;
 
 int main(int argc, char *argv[])
 {
-	char record[MAXLEN], *header[MAXFIELD], *fields[MAXFIELD];
+	char record[MAXLEN], header[MAXFIELD][MAXLENGTH], *fields[MAXFIELD];
 	char country[MAXRECORD][MAXLENGTH];		/* array of country names */
 	char c;
 	int h_opt = 0, l_opt = 0, c_opt = 0;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	int i,len, count = 0;
 	int cases[1000] = {0};
 	int found = 0;
-	char start_date[20], end_date[20];
+	char start_date[20], end_date[20], highest_day[20];
 	int highest_case = 0;
 
 	fp = fopen("data.csv", "r");
@@ -99,7 +99,9 @@ int main(int argc, char *argv[])
 		if(c_opt){
 			/* Save the header */
 			get_record(record);
-			len = get_fields(record, header);
+			len = get_fields(record, fields);
+			for(i = 0; i < len; i++)
+				strcpy(header[i], fields[i]);
 	
 			/* Save the start and end dates */
 			strcpy(start_date, header[4]);
@@ -126,8 +128,10 @@ int main(int argc, char *argv[])
 					highest_case = atoi(fields[4]);
 					for(i = 1; i < len - 4; i++){
 						cases[i] += (atoi(fields[i+4]) - atoi(fields[i+4-1]));
-						highest_case = cases[i] > highest_case ? cases[i] :
-							highest_case;
+						if(cases[i] > highest_case){
+							highest_case = cases[i];
+							strcpy(highest_day, header[i+4]);
+						}
 					}
 				}
 			}
@@ -140,10 +144,10 @@ int main(int argc, char *argv[])
 			draw_graph(cases, len - 4);
 
 			printf("\n\tGraph of covid-19 daily cases\n");
-			printf("\tDate: %s to %s\n", start_date, end_date);
+			printf("\tDate: %s20 to %s20\n", start_date, end_date);
 			printf("\tCountry: %s\n\n", buff);
 			printf("\tLast recorded case: %d cases\n", cases[i-1]);
-			printf("\tHighest recorded case in a day: %d cases\n\n", highest_case);
+			printf("\tHighest recorded case in a day was at %s20 wth %d cases\n\n", highest_day, highest_case);
 
 		}else{
 			printf("%s: Too many arguments\n", prog_name);
@@ -218,7 +222,7 @@ int get_record(char *s)
 }
 
 /* get_fields: separate s into fields and save the pointer pointing at the start
- * of each field into t */
+ * of each field into t. Note that this function modifies the content of s */
 
 int get_fields(char *s, char *t[])
 {
