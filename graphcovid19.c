@@ -18,7 +18,7 @@
 #include <stddef.h>
 
 #define MAXLEN 1700		/* maximum length of each record */
-#define MAXFIELD 200	/* maximum number of fields */
+#define MAXFIELD 250	/* maximum number of fields */
 #define MAXRECORD 300	/* maximum number of records */
 #define MAXLENGTH 50	/* maximum length of a country name */
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 			len = get_fields(record, fields);
 			for(i = 0; i < len; i++)
 				strcpy(header[i], fields[i]);
-	
+
 			/* Save the start and end dates */
 			strcpy(start_date, header[4]);
 			strcpy(end_date, header[len - 1]);
@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
 					}
 				}
 			}
+		
 			if(!found){
 				printf("%s: country '%s' not found\n", prog_name, argv[0]);
 				printf("Try '%s -l' to see the list of countries\n", prog_name);
