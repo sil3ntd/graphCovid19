@@ -16,6 +16,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <locale.h>
 
 #define MAXLEN 1700		/* maximum length of each record */
 #define MAXFIELD 250	/* maximum number of fields */
@@ -44,6 +45,8 @@ int main(int argc, char *argv[])
 	int found = 0;
 	char start_date[20], end_date[20], highest_day[20];
 	int highest_case = 0;
+
+	setlocale(LC_NUMERIC, "");
 
 	fp = fopen("data.csv", "r");
 	if(!fp){
@@ -147,8 +150,8 @@ int main(int argc, char *argv[])
 			printf("\n\tGraph of covid-19 daily cases\n");
 			printf("\tDate: %s20 to %s20\n", start_date, end_date);
 			printf("\tCountry: %s\n\n", buff);
-			printf("\tLast recorded case: %d cases\n", cases[i-1]);
-			printf("\tHighest recorded case in a day was at %s20 wth %d cases\n\n", highest_day, highest_case);
+			printf("\tLast recorded case: %'d cases\n", cases[i-1]);
+			printf("\tHighest recorded case in a day was at %s20 wth %'d cases\n\n", highest_day, highest_case);
 
 		}else{
 			printf("%s: Too many arguments\n", prog_name);
