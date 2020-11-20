@@ -1,4 +1,4 @@
-/* Requirement: 
+/* Requirement:
 
    	Create a vertical histogram of the daily covid19 cases for each country. Use
 	the dataset from the Johns Hopkins University.
@@ -18,8 +18,8 @@
 #include <stddef.h>
 #include <locale.h>
 
-#define MAXLEN 2400	/* maximum length of each record */
-#define MAXFIELD 300	/* maximum number of fields */
+#define MAXLEN 2500	/* maximum length of each record */
+#define MAXFIELD 320	/* maximum number of fields */
 #define MAXRECORD 300	/* maximum number of records */
 #define MAXLENGTH 50	/* maximum length of a country name */
 
@@ -75,9 +75,9 @@ int main(int argc, char *argv[])
 	if(argc == 0){
 		if(l_opt){
 			printf("\nList of countries:\n\n");
-			/* 
+			/*
 			   Structure for printing the list of countries:
-		
+
 			   get a record
 			   separate into fields
 			   save all the country fields
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 			/* get the country */
 			strcpy(buff, argv[0]);
 
-			/* 
+			/*
 			   Structure for printing the graph for a country:
 
 			   get a record
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 					}
 				}
 			}
-		
+
 			if(!found){
 				printf("%s: country '%s' not found\n", prog_name, argv[0]);
 				printf("Try '%s -l' to see the list of countries\n", prog_name);
@@ -235,11 +235,11 @@ int get_fields(char *s, char *t[])
 	char delim = 0x2C; 	/* initialize delimeter to the comma (,) character */
 	int j;
 
-	p_start = s;		
+	p_start = s;
 	/* Check if the current character is a quote ("), if it is start reading at
 	 * the next character, and set delimeter as the quote (") character */
-	if(*p_start == 0x22){	 
-		delim = 0x22;		
+	if(*p_start == 0x22){
+		delim = 0x22;
 		++p_start;
 	}
 
@@ -292,9 +292,9 @@ void draw_graph(int data[], int size)
 		printf("\n");
 	}
 	/* Put a header line on the x axis */
-	printf("%4c|", 0x20);	
+	printf("%4c|", 0x20);
 	for(i = 0; i < size; i++)
 		printf("_");
 	printf("____\n");
-	
+
 }
