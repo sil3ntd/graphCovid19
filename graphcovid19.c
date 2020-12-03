@@ -18,7 +18,7 @@
 #include <stddef.h>
 #include <locale.h>
 
-#define MAXLEN 2500	/* maximum length of each record */
+#define MAXLEN 2600	/* maximum length of each record */
 #define MAXFIELD 320	/* maximum number of fields */
 #define MAXRECORD 300	/* maximum number of records */
 #define MAXLENGTH 50	/* maximum length of a country name */
@@ -283,7 +283,7 @@ void draw_graph(int data[], int size)
 	while(base > 0){
 		printf("%4c|", 0x20);
 		for(i = 0; i < size; i++){
-			if(data[i]/15 < base)
+			if(data[i]/50 < base)
 				printf("%c", 0x20);
 			else
 				printf("%c", '|');
