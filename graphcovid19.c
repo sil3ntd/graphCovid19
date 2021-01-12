@@ -18,8 +18,8 @@
 #include <stddef.h>
 #include <locale.h>
 
-#define MAXLEN 2600	/* maximum length of each record */
-#define MAXFIELD 320	/* maximum number of fields */
+#define MAXLEN 3000	/* maximum length of each record */
+#define MAXFIELD 400	/* maximum number of fields */
 #define MAXRECORD 300	/* maximum number of records */
 #define MAXLENGTH 50	/* maximum length of a country name */
 
